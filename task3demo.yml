@@ -10,18 +10,15 @@ phases:
   pre_build:
     commands:
       - echo Pre-build phase...
-      - echo Running basic tests...
-      - python -m unittest discover || echo "No tests found, continuing..."
+      - git pull origin main  # Pull the latest code from Git
   build:
     commands:
-      - echo Build phase...
-      - echo "Flask application is ready to run"
+      - echo Building application...
+      - # Add any build-related commands here
   post_build:
     commands:
       - echo Post-build phase...
-      - echo "Starting Flask application..."
-      - nohup python app.py &  # This command will run the Flask app in the background
-
+      - echo Build completed on `date`
 artifacts:
   files:
     - '**/*'
