@@ -2,34 +2,17 @@ version: 0.2
 
 phases:
   install:
+    runtime-versions:
+      python: 3.8
     commands:
-      - echo Installing dependencies...
-      - yum install -y python3-pip
-      - pip3 install --upgrade pip
-      - pip3 install awscli
-      - echo Logging in to Docker Hub...
-      - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-
-  pre_build:
-    commands:
-      - echo Downloading source code from GitHub...
-      - git clone https://github.com/cash08-bot/flask-app-demo
-      - cd flask-app-demo
-      - echo Pulling the Docker image...
-      - docker pull cash0808/my-python-app:latest
-      - docker tag cash0808/my-python-app:latest $DOCKER_USERNAME/task3demo-service-python:latest
-
+      - pip install -r requirements.txt
   build:
     commands:
-      - echo Running Docker image...
-      - docker run -d -p 80:8080 $DOCKER_USERNAME/task3demo-service-python:latest
-
+      - docker build -t cash0808/my-python-app:latest .
+      - docker push cash0808/my-python-app:latest
   post_build:
     commands:
-      - echo Updating ECS service with the new Docker image...
-      - aws ecs update-service --cluster task3demo-clu --service task3demo-service-python --force-new-deployment --region us-east-1
-      - echo Writing container image definitions file...
-      - printf '[{"name":"task3demo-service-python","imageUri":"%s"}]' $DOCKER_USERNAME/task3demo-service-python:latest > imagedefinitions.json
-
+      - echo Build completed on `date`
 artifacts:
-  files: imagedefinitions.json
+  files:
+    - '**/*'
