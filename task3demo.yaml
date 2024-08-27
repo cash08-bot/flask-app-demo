@@ -15,7 +15,7 @@ phases:
     commands:
       - echo Build completed on `date`
       - echo Writing image definitions file...
-      - printf '[{"name":"task3demo-clu","imageUri":"%s"}]' cash0808/my-python-app:latest > imagedefinitions.json
+      - printf '[{"name":"task3demo1-con","imageUri":"%s"}]' cash0808/my-python-app:latest > imagedefinitions.json
       - cat imagedefinitions.json 
 artifacts:
     files: imagedefinitions.json
