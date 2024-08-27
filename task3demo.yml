@@ -2,24 +2,35 @@ version: 0.2
 
 phases:
   install:
-    runtime-versions:
-      python: 3.8
     commands:
       - echo Installing dependencies...
-      - pip install -r requirements.txt
+      - yum install -y python3-pip
+      - pip3 install --upgrade pip
+      - pip3 install awscli
+
   pre_build:
     commands:
-      - echo Pre-build phase...
-      - git pull origin main  # Pull the latest code from Git
+      - echo Downloading source code from GitHub...
+      - git clone https://github.com/cash08-bot/flask-app-demo
+      - cd flask-app-demo
+      - echo Building Docker image...
+      - docker build -t task3demo-service-python .
+
   build:
     commands:
-      - echo Building application...
-      - # Add any build-related commands here
+      - echo Running Docker image...
+      - docker run -d -p 80:8080 task3demo-service-python
+
   post_build:
     commands:
-      - echo Post-build phase...
-      - echo Build completed on `date`
+      - echo Updating ECS service with the new Docker image...
+      - aws ecs update-service --cluster task3demo-clu --service task3demo-service-python --force-new-deployment --region us-east-1
+
 artifacts:
   files:
     - '**/*'
   discard-paths: yes
+
+cache:
+  paths:
+    - /root/.cache/pip
