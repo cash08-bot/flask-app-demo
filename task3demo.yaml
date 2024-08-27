@@ -8,6 +8,7 @@ phases:
       - pip install -r requirements.txt
   build:
     commands:
+      - docker login -u cash0808  -p Akash0808$
       - docker build -t cash0808/my-python-app:latest .
       - docker push cash0808/my-python-app:latest
   post_build:
