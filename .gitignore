@@ -1,0 +1,15 @@
+# Virtual environment
+env/
+
+# Compiled Python files
+__pycache__/
+
+# Other files to ignore
+*.pyc
+*.pyo
+*.pyd
+.Python
+db.sqlite3
+instance/
+*.egg-info/
+*.egg
