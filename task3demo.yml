@@ -7,21 +7,29 @@ phases:
       - yum install -y python3-pip
       - pip3 install --upgrade pip
       - pip3 install awscli
+      - echo Logging in to Docker Hub...
+      - echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
   pre_build:
     commands:
       - echo Downloading source code from GitHub...
       - git clone https://github.com/cash08-bot/flask-app-demo
       - cd flask-app-demo
-      - echo Building Docker image...
-      - docker build -t task3demo-service-python .
+      - echo Pulling the Docker image...
+      - docker pull cash0808/my-python-app:latest
+      - docker tag cash0808/my-python-app:latest $DOCKER_USERNAME/task3demo-service-python:latest
 
   build:
     commands:
       - echo Running Docker image...
-      - docker run -d -p 80:8080 task3demo-service-python
+      - docker run -d -p 80:8080 $DOCKER_USERNAME/task3demo-service-python:latest
 
   post_build:
     commands:
       - echo Updating ECS service with the new Docker image...
       - aws ecs update-service --cluster task3demo-clu --service task3demo-service-python --force-new-deployment --region us-east-1
+      - echo Writing container image definitions file...
+      - printf '[{"name":"task3demo-service-python","imageUri":"%s"}]' $DOCKER_USERNAME/task3demo-service-python:latest > imagedefinitions.json
+
+artifacts:
+  files: imagedefinitions.json
