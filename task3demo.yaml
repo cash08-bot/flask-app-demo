@@ -1,3 +1,5 @@
+version: 0.2  # This should be at the root level, not inside "phases"
+
 env:
   variables:
     ECR_REPOSITORY: "akash"                 # Your ECR repository name
@@ -7,7 +9,6 @@ env:
     REPO_URI: "381492133980.dkr.ecr.us-east-1.amazonaws.com/akash"  # Full ECR repo URI
 
 phases:
-  version: 0.2
   install:
     runtime-versions:
       python: 3.8
