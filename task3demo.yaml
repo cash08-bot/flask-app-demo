@@ -1,47 +1,40 @@
-env:
+nv:
   variables:
     ECR_REPOSITORY: "akash"                 # Your ECR repository name
     AWS_ACCOUNT_ID: "381492133980"           # Your AWS Account ID
     AWS_REGION: "us-east-1"                  # Your AWS region
     IMAGE_TAG: "latest"                      # Docker image tag
     REPO_URI: "381492133980.dkr.ecr.us-east-1.amazonaws.com/akash"  # Full ECR repo URI
+ 
 phases:
- version: 0.2
-
-phases:
+  version: 0.2
   install:
     runtime-versions:
       python: 3.8
     commands:
       - pip install -r requirements.txt
-   commands:
       - echo "Installing Docker..."
       - yum install -y docker  # Install Docker
       - docker --version  # Verify Docker installation
- 
   pre_build:
     commands:
       - echo "Retrieving authentication token for ECR..."
       - (Get-ECRLoginCommand).Password | docker login --username AWS --password-stdin 381492133980.dkr.ecr.us-east-1.amazonaws.com
       - echo "ECR login successful."
- 
   build:
     commands:
       - echo "Building Docker image..."
-      - docker build -t akash . .  # Build the Docker image
+      - docker build -t akash .  # Build the Docker image
       - echo "Tagging Docker image for ECR..."
       - docker tag akash:latest 381492133980.dkr.ecr.us-east-1.amazonaws.com/akash:latest
       - echo "Pushing Docker image to ECR..."
       - docker push 381492133980.dkr.ecr.us-east-1.amazonaws.com/akash:latest
- 
-  
- post_build:
-  commands:
-    - echo "Build completed on $(date)"
-    - echo "Writing image definitions file..."
-    - printf '[{"name":"task3demo1-con","imageUri":"%s"}]' "$REPO_URI:$IMAGE_TAG" > imagedefinitions.json
-    - cat imagedefinitions.json
-
+  post_build:
+    commands:
+      - echo "Build completed on $(date)"
+      - echo "Writing image definitions file..."
+      - printf '[{"name":"task3demo1-con","imageUri":"%s"}]' "$REPO_URI:$IMAGE_TAG" > imagedefinitions.json
+      - cat imagedefinitions.json
  
 artifacts:
   files:
